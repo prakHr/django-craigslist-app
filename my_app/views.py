@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import render
 from requests.compat import quote_plus
 from . import models
+import calendar
 
 BASE_CRAIGSLIST_URL = 'https://indore.craigslist.org/search/?query={}'
 BASE_IMAGE_URL = 'https://images.craigslist.org/{}_300x300.jpg'
@@ -11,6 +12,25 @@ BASE_IMAGE_URL = 'https://images.craigslist.org/{}_300x300.jpg'
 def home(request):
     return render(request, 'base.html')
 
+def create_calendar(request):
+    if request.method=='POST':
+        year = request.POST.get('year')
+        month = request.POST.get('month')
+        #print("quantity here:-",search)
+        old_calendar_array=calendar.monthcalendar(int(year),int(month))
+        calendar_array=[]
+        for i in old_calendar_array:
+            temp=[]
+            for j in i:
+                if j==0:
+                    temp.append('')
+                else:temp.append(str(j))
+            calendar_array.append(temp)
+        stuff_for_frontend ={
+            'calendar_array':calendar_array,
+        }
+        return render(request, 'my_app/calendar.html',stuff_for_frontend)
+    return render(request, 'my_app/search_calendar.html')
 
 def new_search(request):
     search = request.POST.get('search')
